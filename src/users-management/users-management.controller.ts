@@ -1,20 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
 import { UsersManagementService } from './users-management.service';
-import { CreateUsersManagementDto } from './dto/create-users-management.dto';
-import { UpdateUsersManagementDto } from './dto/update-users-management.dto';
+import { Prisma } from '@prisma/client';
 
 @Controller('users-management')
 export class UsersManagementController {
   constructor(private readonly usersManagementService: UsersManagementService) {}
 
   @Post()
-  create(@Body() createUsersManagementDto: CreateUsersManagementDto) {
+  create(@Body() createUsersManagementDto: Prisma.UserCreateInput) {
     return this.usersManagementService.create(createUsersManagementDto);
   }
 
   @Get()
-  findAll() {
-    return this.usersManagementService.findAll();
+  findAll(@Query('role') role?:"INTERN" | "USER" | "ADMIN") {
+    return this.usersManagementService.findAll(role);
   }
 
   @Get(':id')
@@ -23,7 +22,7 @@ export class UsersManagementController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUsersManagementDto: UpdateUsersManagementDto) {
+  update(@Param('id') id: string, @Body() updateUsersManagementDto: Prisma.UserUpdateInput) {
     return this.usersManagementService.update(+id, updateUsersManagementDto);
   }
 

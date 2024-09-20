@@ -1,26 +1,52 @@
 import { Injectable } from '@nestjs/common';
-import { CreateUsersManagementDto } from './dto/create-users-management.dto';
-import { UpdateUsersManagementDto } from './dto/update-users-management.dto';
+import { Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class UsersManagementService {
-  create(createUsersManagementDto: CreateUsersManagementDto) {
-    return 'This action adds a new usersManagement';
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  async create(createUsersManagementDto: Prisma.UserCreateInput) {
+
+    return this.databaseService.user.create({
+      data : createUsersManagementDto
+    })
   }
 
-  findAll() {
-    return `This action returns all usersManagement`;
+  async findAll(role?:"INTERN" | "USER" | "ADMIN") {
+    if (role){
+      return this.databaseService.user.findMany({
+        where: {
+          role,
+        }
+      });
+    };
+
+    return this.databaseService.user.findMany();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} usersManagement`;
+  async findOne(id: number) {
+    return this.databaseService.user.findUnique({
+      where: {
+        id,
+      }
+    });
   }
 
-  update(id: number, updateUsersManagementDto: UpdateUsersManagementDto) {
-    return `This action updates a #${id} usersManagement`;
+  async update(id: number, updateUsersManagementDto: Prisma.UserUpdateInput) {
+    return this.databaseService.user.update({
+      where: {
+        id,
+      },
+      data: updateUsersManagementDto
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} usersManagement`;
+  async remove(id: number) {
+    return this.databaseService.user.delete({
+      where: {
+        id,
+      }
+    });
   }
 }
